@@ -3,57 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BYBIT LITE - P2P</title>
+<title>BYBIT LITE - Secure</title>
 <style>
 body{margin:0;font-family:Inter,system-ui;background:#0a0e13;color:#fff}
-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#151a21}
-.logo{color:#ffb700;font-weight:900;font-size:20px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#151a21;position:sticky;top:0;z-index:10}
+.logo{color:#ffb700;font-weight:900}
 .card{background:#151a21;margin:12px;border-radius:16px;padding:16px}
-.price{font-size:28px;color:#00c087;font-weight:800}
-.wallet{display:flex;justify-content:space-between}
 .bal{font-size:22px;font-weight:700}
+.price{color:#00c087;font-weight:800}
 .small{opacity:.6;font-size:12px}
-.p2p-item{background:#1e252f;border-radius:12px;padding:12px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
-.btn{padding:10px 18px;border-radius:8px;border:0;font-weight:800}
-.buy{background:#ffb700}
+.btn{padding:12px 18px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
+.buy{background:#ffb700;color:#000}
 .sell{background:#232b36;color:#fff}
-.live-dot{width:8px;height:8px;background:#00c087;border-radius:50%;display:inline-block}
-.tab{display:flex;gap:12px;margin:10px 0}
-.tab div{padding:8px 16px;border-radius:20px;background:#1e252f;cursor:pointer}
-.tab .active{background:#ffb700;color:#000;font-weight:700}
+.p2p-item{background:#1e252f;border-radius:12px;padding:12px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+.input{width:100%;padding:14px;background:#0a0e13;border:1px solid #2a3441;border-radius:10px;color:#fff;margin:8px 0;box-sizing:border-box}
+.tab{display:flex;gap:8px;margin:10px 0}
+.tab div{padding:8px 16px;border-radius:20px;background:#1e252f;cursor:pointer;font-size:14px}
+.active{background:#ffb700!important;color:#000!important;font-weight:700}
+.switch{width:44px;height:24px;background:#333;border-radius:12px;position:relative;cursor:pointer}
+.switch.on{background:#00c087}
+.dot{width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:.2s}
+.switch.on .dot{left:22px}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:20;padding:20px;overflow:auto}
+.modal-box{background:#151a21;border-radius:16px;padding:20px;max-width:500px;margin:40px auto}
 </style>
 </head>
 <body>
-<header><div class="logo">BYBIT LITE</div><div>Sharpnetwork123 • <span class="live-dot"></span> LIVE</div></header>
+<header><div class="logo">BYBIT LITE</div><div>Sharpnetwork123 • <span style="color:#00c087">●</span> LIVE</div></header>
 
 <div class="card">
-<div class="wallet"><div><div class="small">Total Assets (USDT)</div><div class="bal" id="totalBal">$12,450.00</div></div><div style="text-align:right"><div class="small">BTC</div><div class="price" id="btcPrice">$--</div></div></div>
-<div style="display:flex;gap:10px;margin-top:14px"><button class="btn buy" style="flex:1">Deposit</button><button class="btn sell" style="flex:1">Withdraw</button></div>
+<div style="display:flex;justify-content:space-between"><div><div class="small">Total Assets (USDT)</div><div class="bal">$12,450.00</div></div><div style="text-align:right"><div class="small">BTC</div><div class="price" id="btcPrice">$--</div></div></div>
 </div>
 
 <div class="card">
-<div style="display:flex;justify-content:space-between"><h3 style="margin:0">P2P Trading</h3><span class="small" id="status">live • coingecko</span></div>
-<div class="tab"><div class="active">Buy</div><div>Sell</div><div>History</div></div>
+<h3 style="margin:0">₦ Naira ↔ USDT Converter</h3>
+<div class="tab"><div class="active" onclick="setMode('ngn2usdt')" id="t1">NGN → USDT</div><div onclick="setMode('usdt2ngn')" id="t2">USDT → NGN</div></div>
+<input class="input" type="number" id="ngnInput" placeholder="Enter Naira amount e.g 10000" oninput="convert()">
+<input class="input" type="text" id="usdtOutput" placeholder="USDT equivalent" readonly>
+<div class="small">Rate: ₦1,650 / $1 • Fee: 0.5% • Live from P2P market</div>
+<button class="btn buy" style="width:100%;margin-top:10px">Convert Now</button>
+</div>
 
-<div class="p2p-item"><div><b>⭐ SpeedyTraderNG</b> <span class="small">• 1,203 orders • 98%</span><br><small>₦1,650 / $1 • $100-$5000</small></div><div><button class="btn buy">Buy</button></div></div>
-<div class="p2p-item"><div><b>⭐ CryptoKing_Abuja</b> <span class="small">• 890 orders • 99%</span><br><small>₦1,645 / $1 • $50-$2000</small></div><div><button class="btn buy">Buy</button></div></div>
-<div class="p2p-item"><div><b>⭐ SharpExchange</b> <span class="small">• 450 orders • 100%</span><br><small>₦1,658 / $1 • $200-$10k</small></div><div><button class="btn buy">Buy</button></div></div>
+<div class="card">
+<h3 style="margin:0">P2P Trading</h3>
+<div class="p2p-item"><div><b>⭐ SpeedyTraderNG</b><br><small>₦1,650 / $1 • $100-$5000</small></div><button class="btn buy">Buy</button></div>
+<div class="p2p-item"><div><b>⭐ CryptoKing_Abuja</b><br><small>₦1,645 / $1 • $50-$2000</small></div><button class="btn buy">Buy</button></div>
+<div class="small" style="margin-top:10px">Market: BTC <span id="btc2">--</span> | ETH <span id="eth">--</span> | <span id="time">--</span></div>
+</div>
 
-<div style="margin-top:16px" class="small">Market: BTC <span id="btc2">--</span> | ETH <span id="eth">--</span> | SOL <span id="sol">--</span> • <span id="time">--</span></div>
+<div class="card">
+<h3 style="margin:0 0 12px">🔒 Security • 2FA</h3>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #222"><div><b>Google Authenticator</b><br><span class="small">Recommended for withdrawal</span></div><div class="switch on" onclick="this.classList.toggle('on')"><div class="dot"></div></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #222"><div><b>SMS Authentication</b><br><span class="small">+234 80****1234</span></div><div class="switch on" onclick="this.classList.toggle('on')"><div class="dot"></div></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0"><div><b>Email Verification</b><br><span class="small">s****@gmail.com</span></div><div class="switch" onclick="this.classList.toggle('on')"><div class="dot"></div></div></div>
+</div>
+
+<div class="card" style="text-align:center">
+<div class="small">By using BYBIT LITE you agree to our</div>
+<div style="margin-top:8px"><a href="#" onclick="openModal();return false" style="color:#ffb700;text-decoration:none;font-weight:700">Terms & Conditions</a> • <a href="#" style="color:#ffb700;text-decoration:none">Privacy Policy</a></div>
+<div class="small" style="margin-top:10px">© 2025 BYBIT LITE • Built by Sharpnetwork123</div>
+</div>
+
+<div class="modal" id="termsModal" onclick="if(event.target==this)closeModal()">
+<div class="modal-box">
+<h2>Terms & Conditions</h2>
+<p class="small">Last updated: Nov 2025</p>
+<p><b>1. Eligibility:</b> You must be 18+ to use BYBIT LITE P2P services.</p>
+<p><b>2. P2P Risks:</b> Trades are between users. BYBIT LITE only provides escrow. Verify trader before releasing.</p>
+<p><b>3. Naira Conversion:</b> Rates from P2P market, may fluctuate. 0.5% conversion fee applies.</p>
+<p><b>4. Security:</b> Enable 2FA. We are not liable for loss due to compromised account.</p>
+<p><b>5. Compliance:</b> No fraud, money laundering. KYC may be required for >$1000 trades.</p>
+<p><b>6. Nigeria:</b> Users responsible for CBN regulations. Crypto trading at your risk.</p>
+<button class="btn buy" style="width:100%" onclick="closeModal()">I Agree</button>
+</div>
 </div>
 
 <script>
-async function fetchPrices(){
- const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true');
- const d = await r.json();
- document.getElementById('btcPrice').textContent = '$'+d.bitcoin.usd.toLocaleString();
- document.getElementById('btc2').textContent = '$'+d.bitcoin.usd.toLocaleString();
- document.getElementById('eth').textContent = '$'+d.ethereum.usd.toLocaleString();
- document.getElementById('sol').textContent = '$'+d.solana.usd.toLocaleString();
- document.getElementById('time').textContent = new Date().toLocaleTimeString();
+let mode='ngn2usdt';
+const rate=1650;
+function setMode(m){
+ mode=m;
+ document.getElementById('t1').className=m=='ngn2usdt'?'active':'';
+ document.getElementById('t2').className=m=='usdt2ngn'?'active':'';
+ document.getElementById('ngnInput').placeholder=m=='ngn2usdt'?'Enter Naira e.g 10000':'Enter USDT e.g 100';
+ convert();
 }
-fetchPrices();
-setInterval(fetchPrices, 5000);
+function convert(){
+ let v=parseFloat(document.getElementById('ngnInput').value)||0;
+ let out=document.getElementById('usdtOutput');
+ if(mode=='ngn2usdt'){ out.value=v? (v/rate*0.995).toFixed(2)+' USDT':''; }
+ else{ out.value=v? '₦'+(v*rate*0.995).toLocaleString():''; }
+}
+function openModal(){document.getElementById('termsModal').style.display='block'}
+function closeModal(){document.getElementById('termsModal').style.display='none'}
+async function fetchPrices(){
+ const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd');
+ const d=await r.json();
+ document.getElementById('btcPrice').textContent='$'+d.bitcoin.usd.toLocaleString();
+ document.getElementById('btc2').textContent='$'+d.bitcoin.usd.toLocaleString();
+ document.getElementById('eth').textContent='$'+d.ethereum?.usd||'--';
+ document.getElementById('time').textContent=new Date().toLocaleTimeString();
+}
+fetchPrices();setInterval(fetchPrices,5000);
 </script>
 </body>
 </html>
