@@ -3,108 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BYBIT LITE - Secure</title>
+<title>BYBIT LITE - Fee System</title>
 <style>
 body{margin:0;font-family:Inter,system-ui;background:#0a0e13;color:#fff}
-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#151a21;position:sticky;top:0;z-index:10}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#151a21;position:sticky;top:0}
 .logo{color:#ffb700;font-weight:900}
 .card{background:#151a21;margin:12px;border-radius:16px;padding:16px}
-.bal{font-size:22px;font-weight:700}
+.bal{font-size:24px;font-weight:800}
 .price{color:#00c087;font-weight:800}
 .small{opacity:.6;font-size:12px}
 .btn{padding:12px 18px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
 .buy{background:#ffb700;color:#000}
 .sell{background:#232b36;color:#fff}
-.p2p-item{background:#1e252f;border-radius:12px;padding:12px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
 .input{width:100%;padding:14px;background:#0a0e13;border:1px solid #2a3441;border-radius:10px;color:#fff;margin:8px 0;box-sizing:border-box}
 .tab{display:flex;gap:8px;margin:10px 0}
-.tab div{padding:8px 16px;border-radius:20px;background:#1e252f;cursor:pointer;font-size:14px}
+.tab div{padding:8px 16px;border-radius:20px;background:#1e252f;cursor:pointer;font-size:13px}
 .active{background:#ffb700!important;color:#000!important;font-weight:700}
-.switch{width:44px;height:24px;background:#333;border-radius:12px;position:relative;cursor:pointer}
-.switch.on{background:#00c087}
-.dot{width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:.2s}
-.switch.on .dot{left:22px}
-.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:20;padding:20px;overflow:auto}
-.modal-box{background:#151a21;border-radius:16px;padding:20px;max-width:500px;margin:40px auto}
+.fee-box{background:#0a0e13;border:1px dashed #ffb700;border-radius:10px;padding:10px;margin:10px 0}
+.admin{background:linear-gradient(135deg,#1a2a1a,#151a21);border:1px solid #00c087}
 </style>
 </head>
 <body>
-<header><div class="logo">BYBIT LITE</div><div>Sharpnetwork123 • <span style="color:#00c087">●</span> LIVE</div></header>
+<header><div class="logo">BYBIT LITE</div><div>Sharpnetwork123 • LIVE</div></header>
 
-<div class="card">
-<div style="display:flex;justify-content:space-between"><div><div class="small">Total Assets (USDT)</div><div class="bal">$12,450.00</div></div><div style="text-align:right"><div class="small">BTC</div><div class="price" id="btcPrice">$--</div></div></div>
+<div class="card admin">
+<h3 style="margin:0;color:#00c087">💰 YOUR EARNINGS (Owner)</h3>
+<div style="display:flex;justify-content:space-between;margin-top:10px">
+<div><div class="small">Wallet Balance</div><div class="bal" id="myBal">$12,450.00</div></div>
+<div><div class="small">Fees Collected Today</div><div class="bal" style="color:#ffb700" id="feeBal">$0.00</div></div>
+</div>
+<div class="small" id="feeCount">0 conversions today</div>
 </div>
 
 <div class="card">
-<h3 style="margin:0">₦ Naira ↔ USDT Converter</h3>
-<div class="tab"><div class="active" onclick="setMode('ngn2usdt')" id="t1">NGN → USDT</div><div onclick="setMode('usdt2ngn')" id="t2">USDT → NGN</div></div>
-<input class="input" type="number" id="ngnInput" placeholder="Enter Naira amount e.g 10000" oninput="convert()">
-<input class="input" type="text" id="usdtOutput" placeholder="USDT equivalent" readonly>
-<div class="small">Rate: ₦1,650 / $1 • Fee: 0.5% • Live from P2P market</div>
-<button class="btn buy" style="width:100%;margin-top:10px">Convert Now</button>
+<h3 style="margin:0">₦ Naira ↔ USDT (0.5% Fee Auto Added)</h3>
+<div class="tab"><div class="active" id="t1" onclick="setMode('ngn2usdt')">NGN → USDT</div><div id="t2" onclick="setMode('usdt2ngn')">USDT → NGN</div></div>
+<input class="input" type="number" id="ngnInput" placeholder="Enter Naira e.g 10000" oninput="calc()">
+<div class="fee-box">
+<div style="display:flex;justify-content:space-between"><span class="small">Amount:</span><span id="showAmt">--</span></div>
+<div style="display:flex;justify-content:space-between"><span class="small">Your 0.5% Fee:</span><span style="color:#ffb700" id="showFee">--</span></div>
+<div style="display:flex;justify-content:space-between;font-weight:700"><span>User Gets:</span><span id="showUser" style="color:#00c087">--</span></div>
+</div>
+<input class="input" type="text" id="usdtOutput" readonly placeholder="Result">
+<button class="btn buy" style="width:100%" onclick="doConvert()">✅ Convert & Add Fee To My Wallet</button>
+<div class="small" style="margin-top:8px">Live Rate: ₦1650/$1 • BTC: <span id="btcPrice">--</span></div>
 </div>
 
 <div class="card">
-<h3 style="margin:0">P2P Trading</h3>
-<div class="p2p-item"><div><b>⭐ SpeedyTraderNG</b><br><small>₦1,650 / $1 • $100-$5000</small></div><button class="btn buy">Buy</button></div>
-<div class="p2p-item"><div><b>⭐ CryptoKing_Abuja</b><br><small>₦1,645 / $1 • $50-$2000</small></div><button class="btn buy">Buy</button></div>
-<div class="small" style="margin-top:10px">Market: BTC <span id="btc2">--</span> | ETH <span id="eth">--</span> | <span id="time">--</span></div>
-</div>
-
-<div class="card">
-<h3 style="margin:0 0 12px">🔒 Security • 2FA</h3>
-<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #222"><div><b>Google Authenticator</b><br><span class="small">Recommended for withdrawal</span></div><div class="switch on" onclick="this.classList.toggle('on')"><div class="dot"></div></div></div>
-<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #222"><div><b>SMS Authentication</b><br><span class="small">+234 80****1234</span></div><div class="switch on" onclick="this.classList.toggle('on')"><div class="dot"></div></div></div>
-<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0"><div><b>Email Verification</b><br><span class="small">s****@gmail.com</span></div><div class="switch" onclick="this.classList.toggle('on')"><div class="dot"></div></div></div>
-</div>
-
-<div class="card" style="text-align:center">
-<div class="small">By using BYBIT LITE you agree to our</div>
-<div style="margin-top:8px"><a href="#" onclick="openModal();return false" style="color:#ffb700;text-decoration:none;font-weight:700">Terms & Conditions</a> • <a href="#" style="color:#ffb700;text-decoration:none">Privacy Policy</a></div>
-<div class="small" style="margin-top:10px">© 2025 BYBIT LITE • Built by Sharpnetwork123</div>
-</div>
-
-<div class="modal" id="termsModal" onclick="if(event.target==this)closeModal()">
-<div class="modal-box">
-<h2>Terms & Conditions</h2>
-<p class="small">Last updated: Nov 2025</p>
-<p><b>1. Eligibility:</b> You must be 18+ to use BYBIT LITE P2P services.</p>
-<p><b>2. P2P Risks:</b> Trades are between users. BYBIT LITE only provides escrow. Verify trader before releasing.</p>
-<p><b>3. Naira Conversion:</b> Rates from P2P market, may fluctuate. 0.5% conversion fee applies.</p>
-<p><b>4. Security:</b> Enable 2FA. We are not liable for loss due to compromised account.</p>
-<p><b>5. Compliance:</b> No fraud, money laundering. KYC may be required for >$1000 trades.</p>
-<p><b>6. Nigeria:</b> Users responsible for CBN regulations. Crypto trading at your risk.</p>
-<button class="btn buy" style="width:100%" onclick="closeModal()">I Agree</button>
-</div>
+<h3 style="margin:0 0 10px">📜 Recent Conversions (Fees)</h3>
+<div id="history"><div class="small">No conversions yet - fees will show here</div></div>
+<button class="btn sell" style="width:100%;margin-top:10px" onclick="clearHistory()">Clear History</button>
 </div>
 
 <script>
-let mode='ngn2usdt';
-const rate=1650;
-function setMode(m){
- mode=m;
- document.getElementById('t1').className=m=='ngn2usdt'?'active':'';
- document.getElementById('t2').className=m=='usdt2ngn'?'active':'';
- document.getElementById('ngnInput').placeholder=m=='ngn2usdt'?'Enter Naira e.g 10000':'Enter USDT e.g 100';
- convert();
-}
-function convert(){
+let mode='ngn2usdt', rate=1650, feeRate=0.005;
+let myBalance=12450, totalFees=0, conversions=0, calcData=null;
+
+// Load from storage
+if(localStorage.getItem('lite_bal')){myBalance=parseFloat(localStorage.getItem('lite_bal')); totalFees=parseFloat(localStorage.getItem('lite_fee')||0); conversions=parseInt(localStorage.getItem('lite_count')||0);}
+updateUI();
+
+function setMode(m){mode=m;document.getElementById('t1').className=m=='ngn2usdt'?'active':'';document.getElementById('t2').className=m=='usdt2ngn'?'active':'';document.getElementById('ngnInput').placeholder=m=='ngn2usdt'?'Enter Naira e.g 10000':'Enter USDT e.g 100';calc();}
+
+function calc(){
  let v=parseFloat(document.getElementById('ngnInput').value)||0;
- let out=document.getElementById('usdtOutput');
- if(mode=='ngn2usdt'){ out.value=v? (v/rate*0.995).toFixed(2)+' USDT':''; }
- else{ out.value=v? '₦'+(v*rate*0.995).toLocaleString():''; }
+ if(!v){document.getElementById('showAmt').textContent='--';return;}
+ if(mode=='ngn2usdt'){
+  let usdt=v/rate, fee=usdt*feeRate, userGets=usdt-fee;
+  calcData={type:'NGN->USDT', input:v, fee:fee, userGets:userGets};
+  document.getElementById('showAmt').textContent=v.toLocaleString()+' NGN = '+usdt.toFixed(2)+' USDT';
+  document.getElementById('showFee').textContent=fee.toFixed(4)+' USDT (₦'+(fee*rate).toFixed(0)+')';
+  document.getElementById('showUser').textContent=userGets.toFixed(2)+' USDT';
+  document.getElementById('usdtOutput').value='User gets: '+userGets.toFixed(2)+' USDT | You earn: '+fee.toFixed(4);
+ } else {
+  let ngn=v*rate, feeN=v*feeRate*rate, feeUsdt=v*feeRate, userGetsN=ngn-feeN;
+  calcData={type:'USDT->NGN', input:v, fee:feeUsdt, userGets:userGetsN};
+  document.getElementById('showAmt').textContent=v+' USDT = ₦'+ngn.toLocaleString();
+  document.getElementById('showFee').textContent=feeUsdt.toFixed(4)+' USDT (₦'+feeN.toFixed(0)+')';
+  document.getElementById('showUser').textContent='₦'+userGetsN.toLocaleString();
+  document.getElementById('usdtOutput').value='User gets: ₦'+userGetsN.toLocaleString()+' | You earn: '+feeUsdt.toFixed(4)+' USDT';
+ }
 }
-function openModal(){document.getElementById('termsModal').style.display='block'}
-function closeModal(){document.getElementById('termsModal').style.display='none'}
-async function fetchPrices(){
- const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd');
- const d=await r.json();
- document.getElementById('btcPrice').textContent='$'+d.bitcoin.usd.toLocaleString();
- document.getElementById('btc2').textContent='$'+d.bitcoin.usd.toLocaleString();
- document.getElementById('eth').textContent='$'+d.ethereum?.usd||'--';
- document.getElementById('time').textContent=new Date().toLocaleTimeString();
+
+function doConvert(){
+ if(!calcData){alert('Enter amount first');return;}
+ myBalance+=calcData.fee;
+ totalFees+=calcData.fee;
+ conversions++;
+ localStorage.setItem('lite_bal',myBalance); localStorage.setItem('lite_fee',totalFees); localStorage.setItem('lite_count',conversions);
+ 
+ let h=document.getElementById('history');
+ let div=document.createElement('div');
+ div.style.cssText='background:#1e252f;border-radius:8px;padding:10px;margin-top:8px;display:flex;justify-content:space-between';
+ div.innerHTML='<div><b>'+calcData.type+'</b><br><span class=small>'+new Date().toLocaleTimeString()+'</span></div><div style=text-align:right><span style=color:#ffb700>+'+calcData.fee.toFixed(4)+' fee</span><br><span class=small>User: '+(mode=='ngn2usdt'?calcData.userGets.toFixed(2)+' USDT':'₦'+calcData.userGets.toLocaleString())+'</span></div>';
+ h.prepend(div);
+ if(h.children.length>1 && h.children[1].textContent.includes('No conversions')) h.children[1].remove();
+ updateUI();
+ alert('✅ Success! Fee of '+calcData.fee.toFixed(4)+' USDT added to your wallet! New balance: $'+myBalance.toFixed(2));
+ document.getElementById('ngnInput').value=''; calcData=null;
 }
-fetchPrices();setInterval(fetchPrices,5000);
+
+function updateUI(){
+ document.getElementById('myBal').textContent='$'+myBalance.toFixed(2);
+ document.getElementById('feeBal').textContent='$'+totalFees.toFixed(4);
+ document.getElementById('feeCount').textContent=conversions+' conversions today';
+}
+
+function clearHistory(){if(confirm('Clear all?')){localStorage.clear(); myBalance=12450; totalFees=0; conversions=0; document.getElementById('history').innerHTML='<div class=small>No conversions yet</div>'; updateUI();}}
+
+async function fetchPrices(){try{const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');const d=await r.json();document.getElementById('btcPrice').textContent='$'+d.bitcoin.usd.toLocaleString();}catch{}}
+fetchPrices(); setInterval(fetchPrices,5000);
 </script>
 </body>
 </html>
