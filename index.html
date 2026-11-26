@@ -3,55 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BYBIT LITE - Live</title>
+<title>BYBIT LITE - P2P</title>
 <style>
 body{margin:0;font-family:Inter,system-ui;background:#0a0e13;color:#fff}
-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#151a21;border-bottom:1px solid #222}
-.logo{color:#ffb700;font-weight:900;font-size:22px}
-.card{background:#151a21;margin:16px;border-radius:16px;padding:20px}
-.price{font-size:32px;color:#00c087;font-weight:800;margin:10px 0}
-.sub{opacity:.6;font-size:14px}
-.btn{width:100%;padding:16px;border-radius:12px;border:0;font-weight:800;font-size:16px;margin-top:10px}
-.buy{background:#ffb700;color:#000}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#151a21}
+.logo{color:#ffb700;font-weight:900;font-size:20px}
+.card{background:#151a21;margin:12px;border-radius:16px;padding:16px}
+.price{font-size:28px;color:#00c087;font-weight:800}
+.wallet{display:flex;justify-content:space-between}
+.bal{font-size:22px;font-weight:700}
+.small{opacity:.6;font-size:12px}
+.p2p-item{background:#1e252f;border-radius:12px;padding:12px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+.btn{padding:10px 18px;border-radius:8px;border:0;font-weight:800}
+.buy{background:#ffb700}
 .sell{background:#232b36;color:#fff}
-.market-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #222}
-.live-dot{width:8px;height:8px;background:#00c087;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite}
-@keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
+.live-dot{width:8px;height:8px;background:#00c087;border-radius:50%;display:inline-block}
+.tab{display:flex;gap:12px;margin:10px 0}
+.tab div{padding:8px 16px;border-radius:20px;background:#1e252f;cursor:pointer}
+.tab .active{background:#ffb700;color:#000;font-weight:700}
 </style>
 </head>
 <body>
 <header><div class="logo">BYBIT LITE</div><div>Sharpnetwork123 • <span class="live-dot"></span> LIVE</div></header>
+
 <div class="card">
-<div>BTC/USDT <span style="opacity:.5;font-size:12px" id="status">live...</span></div>
-<div class="price" id="btcPrice">$--</div>
-<div class="sub">P2P Lite Dashboard • Real Price</div>
-<button class="btn buy">Buy BTC</button>
-<button class="btn sell">Sell BTC</button>
+<div class="wallet"><div><div class="small">Total Assets (USDT)</div><div class="bal" id="totalBal">$12,450.00</div></div><div style="text-align:right"><div class="small">BTC</div><div class="price" id="btcPrice">$--</div></div></div>
+<div style="display:flex;gap:10px;margin-top:14px"><button class="btn buy" style="flex:1">Deposit</button><button class="btn sell" style="flex:1">Withdraw</button></div>
 </div>
+
 <div class="card">
-<h3 style="margin:0 0 10px">Market</h3>
-<div class="market-item"><span>BTC</span><span id="btc2">--</span></div>
-<div class="market-item"><span>ETH</span><span id="eth">--</span></div>
-<div class="market-item"><span>SOL</span><span id="sol">--</span></div>
-<div class="market-item"><span>24h Change</span><span id="change" style="color:#00c087">--</span></div>
-<div class="sub" style="margin-top:12px">Last update: <span id="time">--</span></div>
+<div style="display:flex;justify-content:space-between"><h3 style="margin:0">P2P Trading</h3><span class="small" id="status">live • coingecko</span></div>
+<div class="tab"><div class="active">Buy</div><div>Sell</div><div>History</div></div>
+
+<div class="p2p-item"><div><b>⭐ SpeedyTraderNG</b> <span class="small">• 1,203 orders • 98%</span><br><small>₦1,650 / $1 • $100-$5000</small></div><div><button class="btn buy">Buy</button></div></div>
+<div class="p2p-item"><div><b>⭐ CryptoKing_Abuja</b> <span class="small">• 890 orders • 99%</span><br><small>₦1,645 / $1 • $50-$2000</small></div><div><button class="btn buy">Buy</button></div></div>
+<div class="p2p-item"><div><b>⭐ SharpExchange</b> <span class="small">• 450 orders • 100%</span><br><small>₦1,658 / $1 • $200-$10k</small></div><div><button class="btn buy">Buy</button></div></div>
+
+<div style="margin-top:16px" class="small">Market: BTC <span id="btc2">--</span> | ETH <span id="eth">--</span> | SOL <span id="sol">--</span> • <span id="time">--</span></div>
 </div>
+
 <script>
 async function fetchPrices(){
- try{
-  const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true');
-  const d = await r.json();
-  document.getElementById('btcPrice').textContent = '$'+d.bitcoin.usd.toLocaleString();
-  document.getElementById('btc2').textContent = '$'+d.bitcoin.usd.toLocaleString();
-  document.getElementById('eth').textContent = '$'+d.ethereum.usd.toLocaleString();
-  document.getElementById('sol').textContent = '$'+d.solana.usd.toLocaleString();
-  document.getElementById('change').textContent = d.bitcoin.usd_24h_change.toFixed(2)+'%';
-  document.getElementById('status').textContent = 'live • coingecko';
-  document.getElementById('time').textContent = new Date().toLocaleTimeString();
-  document.getElementById('change').style.color = d.bitcoin.usd_24h_change>=0 ? '#00c087' : '#ff4d4d';
- }catch(e){
-  document.getElementById('status').textContent = 'retrying...';
- }
+ const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true');
+ const d = await r.json();
+ document.getElementById('btcPrice').textContent = '$'+d.bitcoin.usd.toLocaleString();
+ document.getElementById('btc2').textContent = '$'+d.bitcoin.usd.toLocaleString();
+ document.getElementById('eth').textContent = '$'+d.ethereum.usd.toLocaleString();
+ document.getElementById('sol').textContent = '$'+d.solana.usd.toLocaleString();
+ document.getElementById('time').textContent = new Date().toLocaleTimeString();
 }
 fetchPrices();
 setInterval(fetchPrices, 5000);
