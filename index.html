@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bybit Lite - Sharpnetwork</title>
+<style>
+body{background:#0b0e11;color:#fff;font-family:Arial;margin:0}
+.header{background:#151a21;padding:15px;display:flex;justify-content:space-between}
+.logo{color:#f7a600;font-weight:bold;font-size:20px}
+.card{background:#1e2329;margin:10px;padding:15px;border-radius:10px}
+.price{color:#0ecb81;font-size:24px;font-weight:bold}
+.btn{background:#f7a600;color:#000;padding:12px;border-radius:8px;border:none;width:100%;font-weight:bold;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="header"><div class="logo">BYBIT LITE</div><div>Sharpnetwork123</div></div>
+<div class="card">
+<h3>BTC/USDT</h3>
+<div class="price" id="btc">Loading...</div>
+<p>P2P Lite Dashboard</p>
+<button class="btn">Buy BTC</button>
+<button class="btn" style="background:#2e3440;color:#fff">Sell BTC</button>
+</div>
+<div class="card">
+<h3>Market</h3>
+<p>ETH: <span id="eth">--</span></p>
+<p>SOL: <span id="sol">--</span></p>
+</div>
+<script>
+async function load(){
+try{
+let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
+let d=await r.json();
+document.getElementById('btc').innerText='$'+parseFloat(d[0].price).toFixed(2);
+document.getElementById('eth').innerText='$'+parseFloat(d[1].price).toFixed(2);
+document.getElementById('sol').innerText='$'+parseFloat(d[2].price).toFixed(2);
+}catch(e){document.getElementById('btc').innerText='$68,420.00'}
+}
+load(); setInterval(load,5000);
+</script>
+</body>
+</html>
