@@ -11,7 +11,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:16p
 .card{background:#151a21;margin:16px;border-radius:16px;padding:20px}
 .price{font-size:32px;color:#00c087;font-weight:800;margin:10px 0}
 .sub{opacity:.6;font-size:14px}
-.btn{width:100%;padding:16px;border-radius:12px;border:0;font-weight:800;font-size:16px;margin-top:10px;cursor:pointer}
+.btn{width:100%;padding:16px;border-radius:12px;border:0;font-weight:800;font-size:16px;margin-top:10px}
 .buy{background:#ffb700;color:#000}
 .sell{background:#232b36;color:#fff}
 .market-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #222}
@@ -21,15 +21,13 @@ header{display:flex;justify-content:space-between;align-items:center;padding:16p
 </head>
 <body>
 <header><div class="logo">BYBIT LITE</div><div>Sharpnetwork123 • <span class="live-dot"></span> LIVE</div></header>
-
 <div class="card">
-<div>BTC/USDT <span style="opacity:.5;font-size:12px" id="status">connecting...</span></div>
+<div>BTC/USDT <span style="opacity:.5;font-size:12px" id="status">live...</span></div>
 <div class="price" id="btcPrice">$--</div>
-<div class="sub">P2P Lite Dashboard • Real Binance Price</div>
+<div class="sub">P2P Lite Dashboard • Real Price</div>
 <button class="btn buy">Buy BTC</button>
 <button class="btn sell">Sell BTC</button>
 </div>
-
 <div class="card">
 <h3 style="margin:0 0 10px">Market</h3>
 <div class="market-item"><span>BTC</span><span id="btc2">--</span></div>
@@ -38,33 +36,21 @@ header{display:flex;justify-content:space-between;align-items:center;padding:16p
 <div class="market-item"><span>24h Change</span><span id="change" style="color:#00c087">--</span></div>
 <div class="sub" style="margin-top:12px">Last update: <span id="time">--</span></div>
 </div>
-
 <script>
 async function fetchPrices(){
  try{
-  const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
-  if(!res.ok) throw new Error('blocked');
-  const data = await res.json();
-  const btc = data.find(x=>x.symbol==='BTCUSDT');
-  const eth = data.find(x=>x.symbol==='ETHUSDT');
-  const sol = data.find(x=>x.symbol==='SOLUSDT');
-  document.getElementById('btcPrice').textContent = '$'+parseFloat(btc.lastPrice).toLocaleString(undefined,{minimumFractionDigits:2});
-  document.getElementById('btc2').textContent = '$'+parseFloat(btc.lastPrice).toLocaleString();
-  document.getElementById('eth').textContent = '$'+parseFloat(eth.lastPrice).toLocaleString();
-  document.getElementById('sol').textContent = '$'+parseFloat(sol.lastPrice).toLocaleString();
-  document.getElementById('change').textContent = parseFloat(btc.priceChangePercent).toFixed(2)+'%';
-  document.getElementById('status').textContent = 'live • binance';
-  document.getElementById('time').textContent = new Date().toLocaleTimeString();
- } catch(e){
-  const r2 = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true');
-  const d2 = await r2.json();
-  document.getElementById('btcPrice').textContent = '$'+d2.bitcoin.usd.toLocaleString();
-  document.getElementById('btc2').textContent = '$'+d2.bitcoin.usd.toLocaleString();
-  document.getElementById('eth').textContent = '$'+d2.ethereum.usd.toLocaleString();
-  document.getElementById('sol').textContent = '$'+d2.solana.usd.toLocaleString();
-  document.getElementById('change').textContent = d2.bitcoin.usd_24h_change.toFixed(2)+'%';
+  const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true');
+  const d = await r.json();
+  document.getElementById('btcPrice').textContent = '$'+d.bitcoin.usd.toLocaleString();
+  document.getElementById('btc2').textContent = '$'+d.bitcoin.usd.toLocaleString();
+  document.getElementById('eth').textContent = '$'+d.ethereum.usd.toLocaleString();
+  document.getElementById('sol').textContent = '$'+d.solana.usd.toLocaleString();
+  document.getElementById('change').textContent = d.bitcoin.usd_24h_change.toFixed(2)+'%';
   document.getElementById('status').textContent = 'live • coingecko';
   document.getElementById('time').textContent = new Date().toLocaleTimeString();
+  document.getElementById('change').style.color = d.bitcoin.usd_24h_change>=0 ? '#00c087' : '#ff4d4d';
+ }catch(e){
+  document.getElementById('status').textContent = 'retrying...';
  }
 }
 fetchPrices();
