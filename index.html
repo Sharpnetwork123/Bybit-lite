@@ -1,42 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bybit Lite - Sharpnetwork</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BYBIT LITE - Live</title>
 <style>
-body{background:#0b0e11;color:#fff;font-family:Arial;margin:0}
-.header{background:#151a21;padding:15px;display:flex;justify-content:space-between}
-.logo{color:#f7a600;font-weight:bold;font-size:20px}
-.card{background:#1e2329;margin:10px;padding:15px;border-radius:10px}
-.price{color:#0ecb81;font-size:24px;font-weight:bold}
-.btn{background:#f7a600;color:#000;padding:12px;border-radius:8px;border:none;width:100%;font-weight:bold;margin-top:10px}
+body{margin:0;font-family:Inter,system-ui;background:#0a0e13;color:#fff}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#151a21;border-bottom:1px solid #222}
+.logo{color:#ffb700;font-weight:900;font-size:22px}
+.card{background:#151a21;margin:16px;border-radius:16px;padding:20px}
+.price{font-size:32px;color:#00c087;font-weight:800;margin:10px 0}
+.sub{opacity:.6;font-size:14px}
+.btn{width:100%;padding:16px;border-radius:12px;border:0;font-weight:800;font-size:16px;margin-top:10px;cursor:pointer}
+.buy{background:#ffb700;color:#000}
+.sell{background:#232b36;color:#fff}
+.market-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #222}
+.live-dot{width:8px;height:8px;background:#00c087;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite}
+@keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
 </style>
 </head>
 <body>
-<div class="header"><div class="logo">BYBIT LITE</div><div>Sharpnetwork123</div></div>
+<header><div class="logo">BYBIT LITE</div><div>Sharpnetwork123 • <span class="live-dot"></span> LIVE</div></header>
+
 <div class="card">
-<h3>BTC/USDT</h3>
-<div class="price" id="btc">Loading...</div>
-<p>P2P Lite Dashboard</p>
-<button class="btn">Buy BTC</button>
-<button class="btn" style="background:#2e3440;color:#fff">Sell BTC</button>
+<div>BTC/USDT <span style="opacity:.5;font-size:12px" id="status">connecting...</span></div>
+<div class="price" id="btcPrice">$--</div>
+<div class="sub">P2P Lite Dashboard • Real Binance Price</div>
+<button class="btn buy">Buy BTC</button>
+<button class="btn sell">Sell BTC</button>
 </div>
+
 <div class="card">
-<h3>Market</h3>
-<p>ETH: <span id="eth">--</span></p>
-<p>SOL: <span id="sol">--</span></p>
+<h3 style="margin:0 0 10px">Market</h3>
+<div class="market-item"><span>BTC</span><span id="btc2">--</span></div>
+<div class="market-item"><span>ETH</span><span id="eth">--</span></div>
+<div class="market-item"><span>SOL</span><span id="sol">--</span></div>
+<div class="market-item"><span>24h Change</span><span id="change" style="color:#00c087">--</span></div>
+<div class="sub" style="margin-top:12px">Last update: <span id="time">--</span></div>
 </div>
+
 <script>
-async function load(){
-try{
-let r=await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
-let d=await r.json();
-document.getElementById('btc').innerText='$'+parseFloat(d[0].price).toFixed(2);
-document.getElementById('eth').innerText='$'+parseFloat(d[1].price).toFixed(2);
-document.getElementById('sol').innerText='$'+parseFloat(d[2].price).toFixed(2);
-}catch(e){document.getElementById('btc').innerText='$68,420.00'}
+async function fetchPrices(){
+ try{
+  const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
+  if(!res.ok) throw new Error('blocked');
+  const data = await res.json();
+  const btc = data.find(x=>x.symbol==='BTCUSDT');
+  const eth = data.find(x=>x.symbol==='ETHUSDT');
+  const sol = data.find(x=>x.symbol==='SOLUSDT');
+  document.getElementById('btcPrice').textContent = '$'+parseFloat(btc.lastPrice).toLocaleString(undefined,{minimumFractionDigits:2});
+  document.getElementById('btc2').textContent = '$'+parseFloat(btc.lastPrice).toLocaleString();
+  document.getElementById('eth').textContent = '$'+parseFloat(eth.lastPrice).toLocaleString();
+  document.getElementById('sol').textContent = '$'+parseFloat(sol.lastPrice).toLocaleString();
+  document.getElementById('change').textContent = parseFloat(btc.priceChangePercent).toFixed(2)+'%';
+  document.getElementById('status').textContent = 'live • binance';
+  document.getElementById('time').textContent = new Date().toLocaleTimeString();
+ } catch(e){
+  const r2 = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true');
+  const d2 = await r2.json();
+  document.getElementById('btcPrice').textContent = '$'+d2.bitcoin.usd.toLocaleString();
+  document.getElementById('btc2').textContent = '$'+d2.bitcoin.usd.toLocaleString();
+  document.getElementById('eth').textContent = '$'+d2.ethereum.usd.toLocaleString();
+  document.getElementById('sol').textContent = '$'+d2.solana.usd.toLocaleString();
+  document.getElementById('change').textContent = d2.bitcoin.usd_24h_change.toFixed(2)+'%';
+  document.getElementById('status').textContent = 'live • coingecko';
+  document.getElementById('time').textContent = new Date().toLocaleTimeString();
+ }
 }
-load(); setInterval(load,5000);
+fetchPrices();
+setInterval(fetchPrices, 5000);
 </script>
 </body>
 </html>
